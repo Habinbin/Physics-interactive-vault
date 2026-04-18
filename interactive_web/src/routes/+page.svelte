@@ -1,331 +1,102 @@
 <script lang="ts">
-	// Dashboard minimalist page
+	import CompressorDashboard from '$lib/components/interactive/CompressorDashboard.svelte';
+	import FormulaBlock from '$lib/components/interactive/FormulaBlock.svelte';
 </script>
 
 <div class="min-h-screen bg-white font-sans text-zinc-900 selection:bg-zinc-200">
 	<div class="mx-auto max-w-5xl px-6 py-20 lg:px-8">
-		<header class="mt-12 mb-24">
-			<h1 class="mb-6 text-5xl font-extrabold tracking-tight text-zinc-900 sm:text-6xl">
-				Ground Energy Systems
+		<header class="mt-12 mb-16">
+			<h1 class="mb-6 text-4xl font-extrabold tracking-tight text-zinc-900 sm:text-5xl">
+				Polytropic Compression Dynamics
 			</h1>
 			<p class="max-w-3xl text-xl leading-relaxed font-light text-zinc-500">
-				An interactive, physics-based educational platform exploring analytical heat conduction
-				models. Adjust physical variables in real-time to build deep physical insights into borehole
-				thermodynamics.
+				An interactive and analytical model defining the heat loss and temperature change across a closed-system polytropic compression cycle. 
 			</p>
 		</header>
 
-		<div class="space-y-4">
-			<h2 class="mb-8 text-sm font-semibold tracking-widest text-zinc-400 uppercase">
-				Analytical Models
-			</h2>
+		<!-- Interactive Section (Moves up for immediate WOW factor) -->
+		<section class="mb-24">
+			<CompressorDashboard />
+		</section>
 
-			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-				<!-- Cylindrical Coordinates Card -->
-				<a
-					href="/examples/cylindrical"
-					class="group block rounded-2xl border border-zinc-200 bg-zinc-50 p-8 transition-all duration-300 hover:border-zinc-900"
-				>
-					<div class="mb-6 flex items-center justify-between">
-						<h3 class="text-2xl font-bold text-zinc-900 transition-colors">
-							Cylindrical Shell Resistance
-						</h3>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-6 w-6 text-zinc-300 transition-colors group-hover:text-zinc-900"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"
-							></polyline></svg
-						>
-					</div>
-					<p class="text-sm leading-relaxed text-zinc-500">
-						Analyze 1D radial heat conduction around a cylindrical source. Visualize dynamic heat
-						spreading and evaluate the steady-state thermal resistance limit of the pipe wall.
-					</p>
-					<div class="mt-8 flex gap-2">
-						<span
-							class="inline-flex items-center rounded-md bg-zinc-200 px-2.5 py-0.5 text-xs font-medium text-zinc-800"
-							>Radia Heatmap</span
-						>
-						<span
-							class="inline-flex items-center rounded-md border border-zinc-200 bg-white px-2.5 py-0.5 text-xs font-medium text-zinc-600"
-							>Thermal Resistance</span
-						>
-					</div>
-				</a>
+		<article class="prose prose-zinc max-w-none">
+			<h2>1. Overview and Equilibrium Assumption</h2>
+			<p>
+				The compression process within the compressor is assumed to be a <strong>Closed System</strong> driven by the piston's reciprocating motion. The process follows a polytropic path <FormulaBlock math={String.raw`P v^n = \text{const}`} />. Simultaneously, heat exchange (heat dissipation) occurs through the cylinder walls.
+			</p>
+			<p>
+				To simplify the real continuous variations during the stroke, we adopt the <strong>Average specific heat</strong> concept. We denote the mass-specific heat capacity at constant pressure as <FormulaBlock math={String.raw`\bar{c}_p`} /> and at constant volume as <FormulaBlock math={String.raw`\bar{c}_v`} /> to distinguish them from total heat capacity.
+			</p>
 
-				<!-- Borehole Fluid Balance Card -->
-				<a
-					href="/examples/borehole-fluid"
-					class="group block rounded-2xl border border-zinc-200 bg-zinc-50 p-8 transition-all duration-300 hover:border-zinc-900"
-				>
-					<div class="mb-6 flex items-center justify-between">
-						<h3 class="text-2xl font-bold text-zinc-900 transition-colors">
-							Borehole Fluid Balance
-						</h3>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-6 w-6 text-zinc-300 transition-colors group-hover:text-zinc-900"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"
-							></polyline></svg
-						>
-					</div>
-					<p class="text-sm leading-relaxed text-zinc-500">
-						Examine the internal borehole fluid energy balance. Observe the non-linear, inverse
-						relationship between flow rate and the resultant inlet-outlet temperature split.
-					</p>
-					<div class="mt-8 flex gap-2">
-						<span
-							class="inline-flex items-center rounded-md bg-zinc-200 px-2.5 py-0.5 text-xs font-medium text-zinc-800"
-							>Line Curve Chart</span
-						>
-						<span
-							class="inline-flex items-center rounded-md border border-zinc-200 bg-white px-2.5 py-0.5 text-xs font-medium text-zinc-600"
-							>Energy Balance</span
-						>
-					</div>
-				</a>
+			<hr class="my-10 border-zinc-200" />
 
-				<!-- ILS Card -->
-				<a
-					href="/examples/ils"
-					class="group block rounded-2xl border border-zinc-200 bg-zinc-50 p-8 transition-all duration-300 hover:border-zinc-900"
-				>
-					<div class="mb-6 flex items-center justify-between">
-						<h3 class="text-2xl font-bold text-zinc-900 transition-colors">
-							Infinite Line Source (ILS)
-						</h3>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-6 w-6 text-zinc-300 transition-colors group-hover:text-zinc-900"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"
-							></polyline></svg
-						>
-					</div>
-					<p class="text-sm leading-relaxed text-zinc-500">
-						Simulates pure radial heat conduction around an infinitely long borehole. Observe the
-						logarithmic temperature rise and thermal penetration over time based on the exponential
-						integral.
-					</p>
-					<div class="mt-8 flex gap-2">
-						<span
-							class="inline-flex items-center rounded-md bg-zinc-200 px-2.5 py-0.5 text-xs font-medium text-zinc-800"
-							>D3 Chart</span
-						>
-						<span
-							class="inline-flex items-center rounded-md border border-zinc-200 bg-white px-2.5 py-0.5 text-xs font-medium text-zinc-600"
-							>Exponential Integral</span
-						>
-					</div>
-				</a>
-
-				<!-- FLS Card -->
-				<a
-					href="/examples/fls"
-					class="group block rounded-2xl border border-zinc-200 bg-zinc-50 p-8 transition-all duration-300 hover:border-zinc-900"
-				>
-					<div class="mb-6 flex items-center justify-between">
-						<h3 class="text-2xl font-bold text-zinc-900 transition-colors">
-							Finite Line Source (FLS)
-						</h3>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-6 w-6 text-zinc-300 transition-colors group-hover:text-zinc-900"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"
-							></polyline></svg
-						>
-					</div>
-					<p class="text-sm leading-relaxed text-zinc-500">
-						Explores the 2D radial-axial profile using the mirror-source principle. Visualizes
-						steady-state behavior and borehole end effects for long-term performance evaluation.
-					</p>
-					<div class="mt-8 flex gap-2">
-						<span
-							class="inline-flex items-center rounded-md bg-zinc-200 px-2.5 py-0.5 text-xs font-medium text-zinc-800"
-							>2D Heatmap</span
-						>
-						<span
-							class="inline-flex items-center rounded-md border border-zinc-200 bg-white px-2.5 py-0.5 text-xs font-medium text-zinc-600"
-							>Steady-State Limit</span
-						>
-					</div>
-				</a>
-
-				<!-- Moving Source Card -->
-				<a
-					href="/examples/moving"
-					class="group block rounded-2xl border border-zinc-200 bg-zinc-50 p-8 transition-all duration-300 hover:border-zinc-900"
-				>
-					<div class="mb-6 flex items-center justify-between">
-						<h3 class="text-2xl font-bold text-zinc-900 transition-colors">
-							Moving Heat-source (Advection)
-						</h3>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-6 w-6 text-zinc-300 transition-colors group-hover:text-zinc-900"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"
-							></polyline></svg
-						>
-					</div>
-					<p class="text-sm leading-relaxed text-zinc-500">
-						Explores thermal diffusion distorted by lateral groundwater advection. Visualize planar
-						thermal plumes mitigating localized borehole temperature accumulation.
-					</p>
-					<div class="mt-8 flex gap-2">
-						<span
-							class="inline-flex items-center rounded-md bg-zinc-200 px-2.5 py-0.5 text-xs font-medium text-zinc-800"
-							>X-Y Heatmap</span
-						>
-						<span
-							class="inline-flex items-center rounded-md border border-zinc-200 bg-white px-2.5 py-0.5 text-xs font-medium text-zinc-600"
-							>Convective Cooling</span
-						>
-					</div>
-				</a>
-
-				<!-- Superposition / Duhamel Card -->
-				<a
-					href="/examples/duhamel"
-					class="group block rounded-2xl border border-zinc-200 bg-zinc-50 p-8 transition-all duration-300 hover:border-zinc-900"
-				>
-					<div class="mb-6 flex items-center justify-between">
-						<h3 class="text-2xl font-bold text-zinc-900 transition-colors">
-							Duhamel's Superposition
-						</h3>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-6 w-6 text-zinc-300 transition-colors group-hover:text-zinc-900"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"
-							></polyline></svg
-						>
-					</div>
-					<p class="text-sm leading-relaxed text-zinc-500">
-						Ultimate modeling environment blending Spatial Interference (placing multiple boreholes
-						on an X-Y plane) with Temporal Superposition (Duhamel's step loads for
-						extraction/injection).
-					</p>
-					<div class="mt-8 flex gap-2">
-						<span
-							class="inline-flex items-center rounded-md bg-zinc-200 px-2.5 py-0.5 text-xs font-medium text-zinc-800"
-							>Spatial Interference</span
-						>
-						<span
-							class="inline-flex items-center rounded-md border border-zinc-200 bg-white px-2.5 py-0.5 text-xs font-medium text-zinc-600"
-							>Temporal Convolution</span
-						>
-					</div>
-				</a>
-
-				<!-- Equivalent Thermal Conductivity -->
-				<a
-					href="/examples/layered-ground"
-					class="group block rounded-2xl border border-zinc-200 bg-zinc-50 p-8 transition-all duration-300 hover:border-zinc-900"
-				>
-					<div class="mb-6 flex items-center justify-between">
-						<h3 class="text-2xl font-bold text-zinc-900 transition-colors">
-							Layered Ground Conductivity
-						</h3>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-6 w-6 text-zinc-300 transition-colors group-hover:text-zinc-900"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"
-							></polyline></svg
-						>
-					</div>
-					<p class="text-sm leading-relaxed text-zinc-500">
-						Analyze equivalent thermal conductivity in anisotropic ground formations. Visualize
-						parallel and series resistance models iteratively with dynamic layers.
-					</p>
-					<div class="mt-8 flex gap-2">
-						<span
-							class="inline-flex items-center rounded-md bg-zinc-200 px-2.5 py-0.5 text-xs font-medium text-zinc-800"
-							>Dynamic Layers</span
-						>
-						<span
-							class="inline-flex items-center rounded-md border border-zinc-200 bg-white px-2.5 py-0.5 text-xs font-medium text-zinc-600"
-							>Equivalent Path</span
-						>
-					</div>
-				</a>
-
-				<!-- Air Exergy Flow Card -->
-				<a
-					href="/examples/exergy"
-					class="group block rounded-2xl border border-zinc-200 bg-zinc-50 p-8 transition-all duration-300 hover:border-zinc-900"
-				>
-					<div class="mb-6 flex items-center justify-between">
-						<h3 class="text-2xl font-bold text-zinc-900 transition-colors">
-							Air Exergy Analysis
-						</h3>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-6 w-6 text-zinc-300 transition-colors group-hover:text-zinc-900"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"
-							></polyline></svg
-						>
-					</div>
-					<p class="text-sm leading-relaxed text-zinc-500">
-						Observe the thermodynamic exergy embedded in conditioned air streams. Evaluate intake and exhaust performance via real-time exergy rate calculations.
-					</p>
-					<div class="mt-8 flex gap-2">
-						<span
-							class="inline-flex items-center rounded-md bg-zinc-200 px-2.5 py-0.5 text-xs font-medium text-zinc-800"
-							>Exergy Curve</span
-						>
-						<span
-							class="inline-flex items-center rounded-md border border-zinc-200 bg-white px-2.5 py-0.5 text-xs font-medium text-zinc-600"
-							>HVAC Schematic</span
-						>
-					</div>
-				</a>
+			<h2>2. Compressor Outlet Temperature (<FormulaBlock math={String.raw`T_{out}`} />)</h2>
+			<p>
+				In a polytropic process, the relationship between temperature and pressure is evaluated using the polytropic index <FormulaBlock math={String.raw`n`} />:
+			</p>
+			<div class="p-6 bg-zinc-50 rounded-xl my-6 flex justify-center text-xl">
+				<FormulaBlock math={String.raw`T_{cmp,out} = T_{cmp,in} \left(\frac{P_{cmp,out}}{P_{cmp,in}}\right)^{\frac{n-1}{n}}`} block />
 			</div>
-		</div>
+
+			<hr class="my-10 border-zinc-200" />
+
+			<h2>3. Work, Energy, and Heat Loss (<FormulaBlock math={String.raw`Q_{out}`} />)</h2>
+			
+			<h3>3.1 First Law of Thermodynamics</h3>
+			<p>
+				Applying the First Law of Thermodynamics to the closed gas system inside the piston. <FormulaBlock math={String.raw`W`} /> represents the compression work received from the outside.
+			</p>
+			<div class="p-6 bg-zinc-50 rounded-xl my-6 flex justify-center text-xl">
+				<FormulaBlock math={String.raw`Q_{in} + W = \Delta U`} block />
+			</div>
+			<p>
+				Defining the heat loss released outward as <FormulaBlock math={String.raw`Q_{out} = -Q_{in}`} />, we get:
+			</p>
+			<div class="p-6 bg-zinc-50 rounded-xl my-6 flex justify-center text-xl">
+				<FormulaBlock math={String.raw`Q_{out} = W - \Delta U`} block />
+			</div>
+
+			<h3>3.2 Work and Internal Energy Formulation</h3>
+			<p>
+				The change in internal energy rate is given by multiplying the mass flow <FormulaBlock math={String.raw`\dot{m}`} /> and the average specific heat <FormulaBlock math={String.raw`\bar{c_v}`} />:
+			</p>
+			<div class="p-6 bg-zinc-50 rounded-xl my-6 flex justify-center text-xl">
+				<FormulaBlock math={String.raw`\Delta U = \dot{m} \bar{c_v} (T_{cmp,out} - T_{cmp,in})`} block />
+			</div>
+			
+			<p>
+				The boundary work along the polytropic path <FormulaBlock math={String.raw`\int P dv`} /> results in:
+			</p>
+			<div class="p-6 bg-zinc-50 rounded-xl my-6 flex justify-center text-xl text-center">
+				<FormulaBlock math={String.raw`W = \frac{\dot{m} R'}{n-1} (T_{cmp,out} - T_{cmp,in})`} block />
+			</div>
+
+			<h3>3.3 Final Heat Loss Substitution</h3>
+			<p>
+				Using Mayer's relation <FormulaBlock math={String.raw`R' = \bar{c}_p - \bar{c}_v`} /> and the specific heat ratio <FormulaBlock math={String.raw`\gamma = \frac{\bar{c}_p}{\bar{c}_v}`} />, we fully derive the final heat dissipation rate <FormulaBlock math={String.raw`Q_{out}`} /> acting on the compressor body:
+			</p>
+			<div class="p-8 bg-zinc-900 text-white rounded-2xl my-6 flex justify-center text-2xl shadow-xl shadow-zinc-900/10">
+				<FormulaBlock math={String.raw`Q_{out} = \dot{m} \bar{c}_p \frac{\gamma-n}{\gamma(n-1)}(T_{cmp,out} - T_{cmp,in})`} block />
+			</div>
+
+			<div class="mt-8 p-4 bg-sky-50 border border-sky-100 rounded-lg text-sky-900 text-sm flex gap-3">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-sky-500" viewBox="0 0 20 20" fill="currentColor">
+				  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+				</svg>
+				<p class="m-0">
+					The ratio coefficient <FormulaBlock math={String.raw`\frac{\gamma-n}{\gamma(n-1)}`} /> reveals the sheer thermodynamic truth of how much internal boundary work decays into heat during the closed process. Notice the loss scales linearly as <FormulaBlock math={String.raw`n`} /> deviates from the adiabatic <FormulaBlock math={String.raw`\gamma`} /> index.
+				</p>
+			</div>
+
+			<hr class="my-10 border-zinc-200" />
+
+			<h3>3.4 Open System Shaft Work (<FormulaBlock math={String.raw`W^*`} />)</h3>
+			<p>
+				The actual compressor operates as an Open Flow System. The motor's mechanical power delivered to the refrigerant is the Shaft Work <FormulaBlock math={String.raw`W^*`} />, derived by incorporating the flow work <FormulaBlock math={String.raw`\Delta(Pv)`} />:
+			</p>
+			<div class="p-6 bg-zinc-50 rounded-xl my-6 flex justify-center text-xl">
+				<FormulaBlock math={String.raw`W^* = \frac{n}{n-1} \dot{m} R' (T_{cmp,out} - T_{cmp,in})`} block />
+			</div>
+		</article>
 	</div>
 </div>

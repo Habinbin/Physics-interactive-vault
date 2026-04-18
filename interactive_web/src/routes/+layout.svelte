@@ -6,7 +6,7 @@
 	<!-- Nav Bar -->
 	<header class="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md">
 		<div class="container mx-auto flex h-16 items-center justify-between px-4">
-			<a href="/" class="text-xl font-bold tracking-tight text-zinc-900"> Ground Energy Systems </a>
+			<a href="/" class="text-xl font-bold tracking-tight text-zinc-900"> Energy Systems </a>
 		</div>
 	</header>
 
