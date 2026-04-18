@@ -12,14 +12,14 @@
   let container: HTMLDivElement;
   let svgWidth = $state(400);
   let svgHeight = $state(300);
-  const margin = { top: 20, right: 20, bottom: 45, left: 55 };
+  const margin = { top: 20, right: 30, bottom: 45, left: 60 };
 
   // Runes pattern for derived data
   let innerWidth = $derived(svgWidth - margin.left - margin.right);
   let innerHeight = $derived(svgHeight - margin.top - margin.bottom);
 
   // Processed Data
-  let pDome = $derived(domeData.map(d => ({
+  let pDome = $derived(domeData.map((d: SaturationPoint) => ({
     P: d.P / 1000,
     T: d.T - 273.15,
     h_liq: d.h_liq / 1000,
@@ -38,34 +38,53 @@
   let sOut = $derived(cycleParams ? cycleParams.s_out / 1000 : 0);
 
   // Scales computing
-  let xScale = $derived(getXScale(type, pDome, innerWidth));
-  let yScale = $derived(getYScale(type, pDome, innerHeight));
-
-  function getXScale(type: string, data: any[], width: number) {
-    if (data.length === 0) return d3.scaleLinear().domain([0, 1]).range([0, width]);
+  let xScale = $derived.by(() => {
+    if (pDome.length === 0) return d3.scaleLinear().domain([0, 1]).range([0, innerWidth]);
     if (type === 'Ts') {
-      const minS = d3.min(data, d => d.s_liq) || 0;
-      const maxS = d3.max(data, d => d.s_vap) || 1;
-      return d3.scaleLinear().domain([minS * 0.9, maxS * 1.1]).range([0, width]);
+      let minS = d3.min(pDome, (d: any) => d.s_liq as number) ?? 0;
+      let maxS = d3.max(pDome, (d: any) => d.s_vap as number) ?? 1;
+      if (cycleParams) {
+        minS = Math.min(minS, sIn, sOut);
+        maxS = Math.max(maxS, sIn, sOut);
+      }
+      return d3.scaleLinear().domain([minS * 0.9, maxS * 1.1]).range([0, innerWidth]);
     } else {
-      const minH = d3.min(data, d => d.h_liq) || 0;
-      const maxH = d3.max(data, d => d.h_vap) || 1;
-      return d3.scaleLinear().domain([minH * 0.9, maxH * 1.1]).range([0, width]);
+      let minH = d3.min(pDome, (d: any) => d.h_liq as number) ?? 0;
+      let maxH = d3.max(pDome, (d: any) => d.h_vap as number) ?? 1;
+      if (cycleParams) {
+        minH = Math.min(minH, hIn, hOut);
+        maxH = Math.max(maxH, hIn, hOut);
+      }
+      return d3.scaleLinear().domain([minH * 0.9, maxH * 1.1]).range([0, innerWidth]);
     }
-  }
+  });
 
-  function getYScale(type: string, data: any[], height: number) {
-    if (data.length === 0) return d3.scaleLinear().domain([0, 1]).range([height, 0]);
+  let yScale = $derived.by(() => {
+    if (pDome.length === 0) return d3.scaleLinear().domain([0, 1]).range([innerHeight, 0]);
     if (type === 'Ph') {
-      const minP = d3.min(data, d => d.P) || 100;
-      const maxP = d3.max(data, d => d.P) || 10000;
-      return d3.scaleLog().domain([minP, maxP * 1.5]).range([height, 0]);
+      let minP = d3.min(pDome, (d: any) => d.P as number) ?? 100;
+      let maxP = d3.max(pDome, (d: any) => d.P as number) ?? 10000;
+      if (cycleParams) {
+        minP = Math.min(minP, pIn, pOut);
+        maxP = Math.max(maxP, pIn, pOut);
+      }
+      if (minP <= 0) minP = 10;
+      return d3.scaleLog().domain([minP * 0.7, maxP * 1.5]).range([innerHeight, 0]);
     } else {
-      const minT = d3.min(data, d => d.T) || -50;
-      const maxT = d3.max(data, d => d.T) || 100;
-      return d3.scaleLinear().domain([minT - 10, maxT + 20]).range([height, 0]);
+      let minT = d3.min(pDome, (d: any) => d.T as number) ?? -50;
+      let maxT = d3.max(pDome, (d: any) => d.T as number) ?? 100;
+      if (cycleParams) {
+        minT = Math.min(minT, tIn, tOut);
+        maxT = Math.max(maxT, tIn, tOut);
+      }
+      return d3.scaleLinear().domain([minT - 10, maxT + 20]).range([innerHeight, 0]);
     }
-  }
+  });
+
+  let xTicks = $derived(xScale.ticks(5) as number[]);
+  let yTicks = $derived((type === 'Ph' ? yScale.ticks(5) : yScale.ticks(6)) as number[]);
+  let xFormat = $derived(xScale.tickFormat(5, "~s"));
+  let yFormat = $derived(type === 'Ph' ? yScale.tickFormat(5, "~s") : yScale.tickFormat(6, "~s"));
 
   // Value formatting
   let getX = $derived((item: any, phase: 'liq' | 'vap') => {
@@ -105,11 +124,6 @@
     <div class="animate-pulse text-zinc-400 text-sm">Loading Chart...</div>
   {:else}
     <div class="relative w-full h-full">
-      <!-- Title -->
-      <div class="absolute top-4 left-6 text-sm font-bold text-zinc-800 tracking-wider">
-        {type.charAt(0)}-{type.charAt(1)} Diagram
-      </div>
-      
       <svg width={svgWidth} height={svgHeight} class="select-none">
         <g transform="translate({margin.left}, {margin.top})">
           
@@ -129,24 +143,42 @@
             
             <!-- Inlet Point -->
             <circle cx={x1} cy={y1} r="4" fill="#18181b" />
-            <text x={x1 - 8} y={y1 + 4} text-anchor="end" font-size="11" fill="#52525b">cmp,in</text>
+            <text x={x1} y={y1 - 10} text-anchor="middle" font-size="13" fill="#52525b" stroke="white" stroke-width="3" stroke-linejoin="round" style="paint-order: stroke fill;">
+              cmp,in ({type === 'Ts' ? sIn.toFixed(1) : hIn.toFixed(1)}, {type === 'Ph' ? pIn.toFixed(1) : tIn.toFixed(1)})
+            </text>
             
             <!-- Outlet Point -->
             <circle cx={x2} cy={y2} r="4" fill="#18181b" />
-            <text x={x2 + 8} y={y2 + 4} text-anchor="start" font-size="11" fill="#52525b">cmp,out</text>
+            <text x={x2} y={y2 - 10} text-anchor="middle" font-size="13" fill="#52525b" stroke="white" stroke-width="3" stroke-linejoin="round" style="paint-order: stroke fill;">
+              cmp,out ({type === 'Ts' ? sOut.toFixed(1) : hOut.toFixed(1)}, {type === 'Ph' ? pOut.toFixed(1) : tOut.toFixed(1)})
+            </text>
           {/if}
 
-          <!-- X Axis Line -->
+          <!-- Axes and Ticks -->
+          <!-- X Axis -->
           <line x1="0" y1={innerHeight} x2={innerWidth} y2={innerHeight} stroke="#d4d4d8" stroke-width="1" />
-          <!-- Y Axis Line -->
+          {#each xTicks as tick (tick)}
+            <g transform="translate({xScale(tick)}, {innerHeight})">
+              <line y2="5" stroke="#d4d4d8" />
+              <text y="18" text-anchor="middle" font-size="13" fill="#71717a">{xFormat(tick)}</text>
+            </g>
+          {/each}
+
+          <!-- Y Axis -->
           <line x1="0" y1="0" x2="0" y2={innerHeight} stroke="#d4d4d8" stroke-width="1" />
+          {#each yTicks as tick (tick)}
+            <g transform="translate(0, {yScale(tick)})">
+              <line x2="-5" stroke="#d4d4d8" />
+              <text x="-8" y="4" text-anchor="end" font-size="13" fill="#71717a">{yFormat(tick)}</text>
+            </g>
+          {/each}
           
           <!-- Basic Axis Labels -->
-          <text x={innerWidth / 2} y={innerHeight + 35} text-anchor="middle" font-size="12" fill="#71717a">
+          <text x={innerWidth / 2} y={innerHeight + 35} text-anchor="middle" font-size="14" fill="#71717a">
             {type === 'Ts' ? 'Entropy [kJ/(kg·K)]' : 'Enthalpy [kJ/kg]'}
           </text>
           
-          <text transform="rotate(-90)" x={-innerHeight / 2} y={-40} text-anchor="middle" font-size="12" fill="#71717a">
+          <text transform="rotate(-90)" x={-innerHeight / 2} y={-40} text-anchor="middle" font-size="14" fill="#71717a">
             {type === 'Ph' ? 'Pressure [kPa]' : 'Temperature [°C]'}
           </text>
         </g>

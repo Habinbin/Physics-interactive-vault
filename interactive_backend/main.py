@@ -123,10 +123,10 @@ def get_saturation(refrigerant: str):
         T_crit = CP.PropsSI('Tcrit', refrigerant)
         T_min = CP.PropsSI('Tmin', refrigerant)
         
-        T_end = T_crit - 0.5
+        T_end = T_crit - 0.05
         T_start = max(T_min, 200.0) 
         
-        steps = 50
+        steps = 150
         delta = (T_end - T_start) / steps
         
         points = []
@@ -148,6 +148,19 @@ def get_saturation(refrigerant: str):
             except:
                 pass 
                 
+        # Append exact critical point to bridge the gap perfectly
+        try:
+            P_crit = CP.PropsSI('Pcrit', refrigerant)
+            h_crit = CP.PropsSI('H', 'T', T_crit, 'P', P_crit, refrigerant)
+            s_crit = CP.PropsSI('S', 'T', T_crit, 'P', P_crit, refrigerant)
+            points.append(SaturationPoint(
+                T=T_crit, P=P_crit,
+                h_liq=h_crit, s_liq=s_crit,
+                h_vap=h_crit, s_vap=s_crit
+            ))
+        except:
+            pass
+
         return SaturationResponse(refrigerant=refrigerant, points=points, success=True)
     except Exception as e:
         return SaturationResponse(refrigerant=refrigerant, points=[], success=False, error=str(e))

@@ -45,7 +45,7 @@ export interface SaturationResponse {
 export async function fetchCompressionData(params: CompressorParams): Promise<CompressorResult> {
 	try {
         // Assume backend runs on port 8000
-		const res = await fetch('http://localhost:8000/api/compress', {
+		const res = await fetch('/api/compress', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(params)
@@ -72,7 +72,7 @@ export async function fetchCompressionData(params: CompressorParams): Promise<Co
 
 export async function fetchSaturationDome(refrigerant: string): Promise<SaturationResponse> {
 	try {
-		const res = await fetch(`http://localhost:8000/api/saturation/${encodeURIComponent(refrigerant)}`);
+		const res = await fetch(`/api/saturation/${encodeURIComponent(refrigerant)}`);
 		if (!res.ok) throw new Error('API request failed');
 		return await res.json();
 	} catch (e) {

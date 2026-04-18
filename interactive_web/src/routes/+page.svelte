@@ -75,7 +75,7 @@
 			<p>
 				Using Mayer's relation <FormulaBlock math={String.raw`R' = \bar{c}_p - \bar{c}_v`} /> and the specific heat ratio <FormulaBlock math={String.raw`\gamma = \frac{\bar{c}_p}{\bar{c}_v}`} />, we fully derive the final heat dissipation rate <FormulaBlock math={String.raw`Q_{out}`} /> acting on the compressor body:
 			</p>
-			<div class="p-8 bg-zinc-900 text-white rounded-2xl my-6 flex justify-center text-2xl shadow-xl shadow-zinc-900/10">
+			<div class="p-6 bg-zinc-50 rounded-xl my-6 flex justify-center text-xl">
 				<FormulaBlock math={String.raw`Q_{out} = \dot{m} \bar{c}_p \frac{\gamma-n}{\gamma(n-1)}(T_{cmp,out} - T_{cmp,in})`} block />
 			</div>
 

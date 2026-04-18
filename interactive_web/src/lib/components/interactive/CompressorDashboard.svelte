@@ -10,6 +10,8 @@
 	let n = $state(1.15);
 	let mDot = $state(0.05);
 
+	let activeTab = $state<'Ph' | 'Th' | 'Ts'>('Ph');
+
 	let result = $state<CompressorResult | null>(null);
 	let domeData = $state<SaturationPoint[]>([]);
 
@@ -61,8 +63,9 @@
 
 		<div class="space-y-4">
 			<div>
-				<label class="block text-sm font-medium text-zinc-700 mb-1">Refrigerant</label>
+				<label class="block text-sm font-medium text-zinc-700 mb-1" for="ref-select">Refrigerant</label>
 				<select
+					id="ref-select"
 					bind:value={ref}
 					class="w-full rounded-md border-zinc-300 shadow-sm focus:border-zinc-500 focus:ring-zinc-500 text-sm"
 				>
@@ -75,31 +78,31 @@
 			</div>
 
 			<div>
-				<label class="block text-sm font-medium text-zinc-700 mb-1 flex justify-between"
+				<label class="block text-sm font-medium text-zinc-700 mb-1 flex justify-between" for="t-in-range"
 					><span><FormulaBlock math={String.raw`T_{in}`} /> (ºC)</span> <span>{tInCelsius.toFixed(1)}</span></label
 				>
-				<input type="range" min="-30" max="100" step="1" bind:value={tInCelsius} class="w-full accent-zinc-800" />
+				<input id="t-in-range" type="range" min="-30" max="100" step="1" bind:value={tInCelsius} class="w-full accent-zinc-800" />
 			</div>
 
 			<div>
-				<label class="block text-sm font-medium text-zinc-700 mb-1 flex justify-between"
+				<label class="block text-sm font-medium text-zinc-700 mb-1 flex justify-between" for="p-in-range"
 					><span><FormulaBlock math={String.raw`P_{in}`} /> (kPa)</span> <span>{(pIn / 1000).toFixed(0)}</span></label
 				>
-				<input type="range" min="100000" max="2000000" step="10000" bind:value={pIn} class="w-full accent-zinc-800" />
+				<input id="p-in-range" type="range" min="100000" max="2000000" step="10000" bind:value={pIn} class="w-full accent-zinc-800" />
 			</div>
 
 			<div>
-				<label class="block text-sm font-medium text-zinc-700 mb-1 flex justify-between"
+				<label class="block text-sm font-medium text-zinc-700 mb-1 flex justify-between" for="p-out-range"
 					><span><FormulaBlock math={String.raw`P_{out}`} /> (kPa)</span> <span>{(pOut / 1000).toFixed(0)}</span></label
 				>
-				<input type="range" min="100000" max="5000000" step="10000" bind:value={pOut} class="w-full accent-zinc-800" />
+				<input id="p-out-range" type="range" min="100000" max="5000000" step="10000" bind:value={pOut} class="w-full accent-zinc-800" />
 			</div>
 
 			<div>
-				<label class="block text-sm font-medium text-zinc-700 mb-1 flex justify-between"
+				<label class="block text-sm font-medium text-zinc-700 mb-1 flex justify-between" for="n-range"
 					><span>Polytropic Index <FormulaBlock math={String.raw`n`} /></span> <span>{n.toFixed(3)}</span></label
 				>
-				<input type="range" min="1.000" max="1.500" step="0.001" bind:value={n} class="w-full accent-zinc-800" />
+				<input id="n-range" type="range" min="1.000" max="1.500" step="0.001" bind:value={n} class="w-full accent-zinc-800" />
 				<div class="text-xs text-zinc-500 mt-1 flex justify-between">
 					<span>Isothermal (1)</span>
 					<span>Adiabatic (<FormulaBlock math={String.raw`\gamma`} /> : <strong class="text-zinc-700">{result?.success ? result.gamma.toFixed(3) : '-'}</strong>)</span>
@@ -107,10 +110,10 @@
 			</div>
 
 			<div>
-				<label class="block text-sm font-medium text-zinc-700 mb-1 flex justify-between"
+				<label class="block text-sm font-medium text-zinc-700 mb-1 flex justify-between" for="mdot-range"
 					><span>Mass Flow <FormulaBlock math={String.raw`\dot{m}`} /> (kg/s)</span> <span>{mDot.toFixed(3)}</span></label
 				>
-				<input type="range" min="0.01" max="0.5" step="0.01" bind:value={mDot} class="w-full accent-zinc-800" />
+				<input id="mdot-range" type="range" min="0.01" max="0.5" step="0.01" bind:value={mDot} class="w-full accent-zinc-800" />
 			</div>
 		</div>
 	</div>
@@ -235,8 +238,18 @@
 </div>
 
 <!-- Bottom Panel: Thermodynamic Diagrams -->
-<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-	<ThermodynamicDiagram type="Ph" {domeData} cycleParams={result} />
-	<ThermodynamicDiagram type="Th" {domeData} cycleParams={result} />
-	<ThermodynamicDiagram type="Ts" {domeData} cycleParams={result} />
+<div class="mt-8 bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+	<div class="flex border-b border-zinc-200 bg-zinc-50/50 p-2 gap-2 px-4">
+		{#each ['Ph', 'Th', 'Ts'] as tab}
+			<button 
+				class="px-4 py-2 text-sm font-medium rounded-lg transition-colors {activeTab === tab ? 'bg-white text-zinc-900 shadow-sm border border-zinc-200' : 'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100/50'}"
+				onclick={() => activeTab = tab as 'Ph' | 'Th' | 'Ts'}
+			>
+				{tab} Diagram
+			</button>
+		{/each}
+	</div>
+	<div class="p-6">
+		<ThermodynamicDiagram type={activeTab} {domeData} cycleParams={result} />
+	</div>
 </div>
